@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           # 替换为您的私有仓库地址，例如：YourName/YourPrivateRepo
-          repository: your-github-username/your-private-repo
+          repository:kanezikii/greathost-Renew
           # 需要在公共库的 Secrets 中配置一个具备访问私库权限的 Personal Access Token (PAT)
           token: ${{ secrets.PRIVATE_REPO_PAT }}
           path: private_scripts
