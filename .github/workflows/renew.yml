@@ -1,0 +1,40 @@
+name: Greathost Renew (Public Trigger)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2,14 * * *' # 每天 UTC 时间 2:00 和 14:00 执行 (可按需修改)
+
+jobs:
+  renew:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+        with:
+          # 替换为您的私有仓库地址，例如：YourName/YourPrivateRepo
+          repository: your-github-username/your-private-repo
+          # 需要在公共库的 Secrets 中配置一个具备访问私库权限的 Personal Access Token (PAT)
+          token: ${{ secrets.PRIVATE_REPO_PAT }}
+          path: private_scripts
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          pip install playwright requests
+          playwright install chromium
+
+      - name: Run Renew Script
+        env:
+          GREATHOST_EMAIL: ${{ secrets.GREATHOST_EMAIL }}
+          GREATHOST_PASSWORD: ${{ secrets.GREATHOST_PASSWORD }}
+          GREATHOST_COOKIES: ${{ secrets.GREATHOST_COOKIES }} # JSON 格式的 Cookies 字符串
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+          # 您的两个目标机器链接，用逗号分隔
+          TARGET_URLS: "https://greathost.es/contracts/1e3fb1f7-4bfd-4ce9-9c87-5ae5e29969ac,https://greathost.es/contracts/f0308705-b21d-463f-8be2-fcce80954d93"
+        run: python private_scripts/renew.py
